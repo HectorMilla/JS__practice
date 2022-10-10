@@ -18,6 +18,12 @@ function loadEventListeners(){
   form.addEventListener('submit', addTask)
   // Remove task event
   taskList.addEventListener('click', removeTask)
+  // Clear task event
+  if (clearBtn){
+    clearBtn.addEventListener('click', clearTasks)
+  }
+  // Filter tasks event
+  filter.addEventListener('keyup', filterTasks)
 }
 
 // Add task
@@ -42,10 +48,30 @@ function addTask(e){
   // append to task list
   taskList.appendChild(li)
 
+  // Store in LS\
+  storeTaskInLocalStorage(taskInput.value)
+
+
   // Clear input
   taskInput.value = ''
   
   e.preventDefault()
+}
+
+// Store task
+
+function storeTaskInLocalStorage(task){
+  let tasks;
+  if (localStorage.getItem('tasks') === null){
+    tasks = []
+  } else {
+    tasks = JSON.parse(localStorage.getItem('tasks'))
+  }
+
+  tasks.push(task)
+  console.log(tasks);
+  localStorage.setItem('tasks',JSON.stringify(tasks))
+
 }
 
 // Remove Task
@@ -59,5 +85,28 @@ function removeTask (e) {
    
 
   }
-  console.log(e.target.className)
+  
+}
+
+// Clear Tasks
+function clearTasks() {
+  while(taskList.firstChild) {
+    taskList.removeChild(taskList.firstChild)
+  }
+}
+
+// Filter tasks
+function filterTasks(e) {
+  const text = e.target.value.toLowerCase()
+
+  document.querySelectorAll('.collection-item').forEach(
+    function(task){
+      const item = task.firstChild.textContent
+      if(item.toLowerCase().indexOf(text) != -1){
+        task.style.display = 'block'
+      } else {
+        task.style.display = 'none'
+      }
+    }
+  )
 }
